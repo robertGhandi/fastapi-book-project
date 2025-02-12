@@ -1,38 +1,28 @@
-name: CD Pipeline
+name: Fly Deploy
 
 on:
   pull_request:
-    types:
-      - closed
+    types: [closed]
     branches:
       - main
 
-permissions:
-  contents: read
-
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
+    name: deploy
     runs-on: ubuntu-latest
-
+    concurrency: deploy-group  # Ensures only one deployment runs at a time
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Install Fly.io CLI
-        run: |
-          curl -L https://fly.io/install.sh | sh
-          export PATH=$HOME/.fly/bin:$PATH
-          flyctl version
+      - name: Set up Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Verify FLY_API_TOKEN
-        run: |
-          if [ -z "$FLY_API_TOKEN" ]; then
-            echo "FLY_API_TOKEN is not set. Please configure it in GitHub Secrets."
-            exit 1
-          fi
-
-      - name: Deploy to Fly.io
+      - name: Deploy application to Fly.io
+        run: flyctl deploy --remote-only
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN || '' }}
-        run: |
-          flyctl deploy --remote-only
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Confirm deployment success
+        run: echo "Deployment successful!"
