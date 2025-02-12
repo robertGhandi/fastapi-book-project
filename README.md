@@ -97,13 +97,13 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 2. Authenticate with Fly.io:
 
 ```bash
-fly auth login
+flyctl auth login
 ```
 
 3. Deploy the application:
 
 ```bash
-fly deploy
+flyctl deploy
 ```
 
 ## CI/CD Pipeline
