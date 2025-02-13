@@ -22,6 +22,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy Supervisor configuration
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
+
 # Expose port 8080 for Nginx
 EXPOSE 8080
 
