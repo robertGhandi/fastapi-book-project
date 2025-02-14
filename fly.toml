@@ -1,20 +1,25 @@
-# fly.toml app configuration file generated for fastapi-book-project-icy-surf-8769 on 2025-02-12T01:43:52+01:00
+app = "fastapi-book-project-icy-surf-8769"
+primary_region = "lhr"
 
-app = 'fastapi-book-project-icy-surf-8769'
-primary_region = 'lhr'
-
-[http_service]
+[[services]]
   internal_port = 8080
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+  processes = ["app"]
+  protocol = "tcp"
 
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.headers.response]
+    override = { "Server" = "nginx" }
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  memory = "1gb"
+  cpu_kind = "shared"
   cpus = 1
 
 [processes]
