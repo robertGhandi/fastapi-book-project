@@ -1,4 +1,4 @@
-name: Fly Deploy
+name: Railway Deploy
 
 on:
   pull_request:
@@ -9,20 +9,22 @@ on:
 jobs:
   deploy:
     if: github.event.pull_request.merged == true
-    name: deploy
+    name: Deploy to Railway
     runs-on: ubuntu-latest
     concurrency: deploy-group  # Ensures only one deployment runs at a time
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Fly.io CLI
-        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Set up Railway CLI
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
 
-      - name: Deploy application to Fly.io
-        run: flyctl deploy --remote-only
+      - name: Deploy application to Railway
+        run: railway up
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Confirm deployment success
         run: echo "Deployment successful!"
